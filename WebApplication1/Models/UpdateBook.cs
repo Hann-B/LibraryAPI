@@ -17,7 +17,7 @@ namespace WebApplication1.Models
             Id = (int)reader["Id"];
             Title = reader["Title"].ToString();
             Author = reader["Author"].ToString();
-            //YearPublished = (int)reader["YearPublished"];
+            YearPublished = (int)reader["YearPublished"];
             Genre = reader["Genre"].ToString();
             IsCheckedOut = (bool)reader["IsCheckedOut"];
             LastCheckedOutDate = reader["LastCheckedOutDate"] as DateTime?;

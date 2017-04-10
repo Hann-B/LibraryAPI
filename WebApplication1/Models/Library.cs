@@ -13,10 +13,10 @@ namespace WebApplication1.Models
         public static string Title { get; set; }
         public static string Author { get; set; }
         public static int YearPublished { get; set; }
-        public string Genre { get; set; }
+        public static string Genre { get; set; }
         public static bool IsCheckedOut { get; set; }
-        public DateTime? LastCheckedOutDate { get; set; }
-        public DateTime? DueBackDate { get; set; }
+        public static DateTime? LastCheckedOutDate { get; set; }
+        public static DateTime? DueBackDate { get; set; }
         public string NeatDueBackDate
         {
             get
