@@ -17,11 +17,11 @@ namespace WebApplication1.Models
             Id = (int)reader["Id"];
             Title = reader["Title"].ToString();
             Author = reader["Author"].ToString();
-            //YearPublished = (int)reader["YearPublished"];
+            YearPublished = reader["YearPublished"] as int?;
             Genre = reader["Genre"].ToString();
             IsCheckedOut = (bool)reader["IsCheckedOut"];
-            //LastCheckedOutDate = reader["LastCheckedOutDate"] as DateTime?;
-            //DueBackDate = reader["DueBackDate"] as DateTime?;
+            LastCheckedOutDate = reader["LastCheckedOutDate"] as DateTime?;
+            DueBackDate = reader["DueBackDate"] as DateTime?;
 
         }
     }
