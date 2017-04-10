@@ -11,15 +11,21 @@ namespace WebApplication1.Controllers
 {
     public class BooksController : ApiController
     {
-        //Where is my data!
+        private void TempDataBase(ref List<SeeLibrary> Books)
+        {
+
+        }
+        //my data!
         public const string connectionString =
                 @"Server=localhost\SQLEXPRESS;Database=LibraryAPI;Trusted_Connection=True;";
 
-        [HttpGet]
+        [HttpGet]//View Entire Library 
         public IHttpActionResult ViewLibrary()
         {
             var rv = new List<SeeLibrary>();
+            TempDataBase(ref Books) = rv;
             using (var connection = new SqlConnection(connectionString))
+
             {
                 var sqlCommand = new SqlCommand
                     (@"SELECT *
@@ -36,7 +42,7 @@ namespace WebApplication1.Controllers
                 return Ok(rv);
             }
         }
-        [HttpGet]
+        [HttpGet]//Look for a book: checked in or checked out?
         public IHttpActionResult BooksCheckedOut(bool IsCheckedOut)
         {
             if (IsCheckedOut == true)
@@ -93,66 +99,89 @@ namespace WebApplication1.Controllers
             }
         }
 
-        [HttpPost]
-        public IHttpActionResult AddaBook(string title, string author, bool isCheckedOut = false)
+        [HttpPut]//Add a book to the library
+        public IHttpActionResult AddaBook([FromBody] AddBook book)
         {
-            var newBook = new AddBook()
-            {
-                Title = title,
-                Author = author,
-            };
+
             using (var connection = new SqlConnection(connectionString))
             {
                 var query = $@"INSERT INTO [dbo].[Books]
                                ([Title]
                                ,[Author]
                                ,[IsCheckedOut])                        
-                              VALUES ('{title}', '{author}', '{isCheckedOut}')";
+                              VALUES (@Title, @Author, @IsCheckedOut)";
                 var cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@Title", AddBook.Title);
+                cmd.Parameters.AddWithValue("@Author", AddBook.Author);
+                cmd.Parameters.AddWithValue("@IsCheckedOut", AddBook.IsCheckedOut);
                 connection.Open();
                 cmd.ExecuteNonQuery();
                 connection.Close();
             }
-            return Ok(newBook);
+            return Ok(book);
         }
 
-        [HttpDelete]
+        [HttpDelete]//delete a book from the library
         public IHttpActionResult DeleteaBook(int id)
         {
-            using (var connection = new SqlConnection(connectionString))
+            try
             {
-                var query = $@"DELETE FROM[dbo].[Books]
-                            WHERE Id = '{id}'";
-                var cmd = new SqlCommand(query, connection);
-                connection.Open();
-                cmd.ExecuteNonQuery();
-                connection.Close();
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (SqlCommand cmd =
+                        new SqlCommand("DELETE FROM Books" +
+                     "WHERE Id=@Id", connection))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", DeleteBook.Id);
+                        int rows = cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
 
-                return Ok($"Book with Id '{id}' has been deleted from the library");
             }
         }
 
-        //[HttpPut]
-        //public IHttpActionResult UpdateaBook()
-        //{
 
-        //    using (var connection = new SqlConnection(connectionString))
-        //    {
-        //        var query = $@"UPDATE[dbo].[Books]
-        //                     SET[Title] = < Title, nvarchar(50),>
-        //                     ,[Author] = <Author, nvarchar(50),>
-        //                     ,[YearPublished] = <YearPublished, int,>
-        //                      ,[Genre] = <Genre, nvarchar(50),>
-        //                      ,[IsCheckedOut] = <IsCheckedOut, bit,>
-        //                      ,[LastCheckedOutDate] = <LastCheckedOutDate, datetime,>
-        //                      ,[DueBackDate] = <DueBackDate, datetime,>
-        //                       WHERE Id =";
-        //        var cmd = new SqlCommand(query, connection);
-        //        connection.Open();
-        //        cmd.ExecuteNonQuery();
-        //        connection.Close();
-        //    }
-        //    return Ok();
-        //}
+        [HttpPut]//Update a books information  
+        public IHttpActionResult UpdateaBook([FromBody]int id)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    var query = $@"UPDATE[dbo].[Books]
+                             SET[Title] = @Title
+                             ,[Author] = @Author
+                             ,[YearPublished] = @YearPublished
+                              ,[Genre] = @Genre
+                              ,[IsCheckedOut] = @IsCheckedOut
+                              ,[LastCheckedOutDate] = @LastCheckedOutDate
+                              ,[DueBackDate] = @DueBackDate
+                               WHERE Id = @Id";
+                    var cmd = new SqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@Title", AddBook.Title);
+                    cmd.Parameters.AddWithValue("@Author", AddBook.Author);
+                    cmd.Parameters.AddWithValue("@IsCheckedOut", AddBook.IsCheckedOut);
+                    cmd.Parameters.AddWithValue("@YearPublished", AddBook.YearPublished);
+                    cmd.Parameters.AddWithValue("@Genre", AddBook.Genre);
+                    cmd.Parameters.AddWithValue("@LastCheckedOutDate", AddBook.LastCheckedOutDate);
+                    cmd.Parameters.AddWithValue("@DueBackDate", AddBook.DueBackDate);
+
+                    connection.Open();
+                    int rows = cmd.ExecuteNonQuery();
+                    connection.Close();
+                    return Ok(rows);
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                sqlEx = MessageBox.Show("there was an issue!");
+                return Ok();
+            }
+
+        }
     }
 }

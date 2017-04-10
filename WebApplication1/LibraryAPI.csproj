@@ -188,6 +188,7 @@
     <Compile Include="Models\DeleteBook.cs" />
     <Compile Include="Models\Library.cs" />
     <Compile Include="Models\SeeLibrary.cs" />
+    <Compile Include="Models\UpdateBook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

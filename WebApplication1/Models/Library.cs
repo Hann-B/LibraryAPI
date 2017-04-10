@@ -9,9 +9,9 @@ namespace WebApplication1.Models
 {
     abstract public class Library
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string Author { get; set; }
+        public static int Id { get; set; }
+        public static string Title { get; set; }
+        public static string Author { get; set; }
         public static int YearPublished { get; set; }
         public string Genre { get; set; }
         public static bool IsCheckedOut { get; set; }
